@@ -39,11 +39,10 @@ public class ManagerController {
 
     @DeleteMapping("/todos/{todoId}/managers/{managerId}")
     public void deleteManager(
-            HttpServletRequest request,
+            @Auth AuthUser authUser,
             @PathVariable long todoId,
             @PathVariable long managerId
     ) {
-        long userId = (Long) request.getAttribute("userId");
-        managerService.deleteManager(userId, todoId, managerId);
+        managerService.deleteManager(authUser.getId(), todoId, managerId);
     }
 }
