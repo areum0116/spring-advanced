@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.example.expert.domain.common.entity.Timestamped;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @Aspect
 public class AccessLogAop {
 
-    @Pointcut("@annotation(org.example.expert.annotation.AccessLog)")
+    @Pointcut("@annotation(org.example.expert.domain.common.annotation.AccessLog)")
     public void accessLog() {}
 
     @Before("accessLog()")

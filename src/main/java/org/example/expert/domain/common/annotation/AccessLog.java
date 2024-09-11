@@ -1,4 +1,4 @@
-package org.example.expert.annotation;
+package org.example.expert.domain.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
