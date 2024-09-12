@@ -8,6 +8,7 @@ import org.example.expert.domain.comment.repository.CommentRepository;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.common.exception.ServerException;
+import org.example.expert.domain.manager.entity.Manager;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +42,7 @@ class CommentServiceTest {
     @Nested
     class SaveCommentTest {
         @Test
-        void comment_등록_중_할일을_찾지_못해_에러가_발생한다() {
+        void comment_등록_중_할일을_찾지_못해_에러가_발생() {
             // given
             long todoId = 1;
             CommentSaveRequest request = new CommentSaveRequest("contents");
@@ -58,7 +60,27 @@ class CommentServiceTest {
         }
 
         @Test
-        void comment를_정상적으로_등록한다() {
+        void 할일의_담당자가_아니면_예외_발생() {
+            // given
+            long todoId = 1;
+            CommentSaveRequest request = new CommentSaveRequest("contents");
+            AuthUser authUser = new AuthUser(1L, "email", UserRole.USER);
+            User user = User.fromAuthUser(authUser);
+            User anotherUser = new User("email", "password", UserRole.USER);
+            ReflectionTestUtils.setField(anotherUser, "id", 2L);
+            Todo todo = new Todo("title", "contents", "weather", anotherUser);
+
+            CommentSaveRequest commentSaveRequest = new CommentSaveRequest("contents");
+
+            given(todoRepository.findById(anyLong())).willReturn(Optional.of(todo));
+
+            // when & then
+            InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> commentService.saveComment(authUser, todoId, commentSaveRequest));
+            assertEquals("Only todo manager can leave a comment.", exception.getMessage());
+        }
+
+        @Test
+        void comment를_정상적으로_등록() {
             // given
             long todoId = 1;
             CommentSaveRequest request = new CommentSaveRequest("contents");
