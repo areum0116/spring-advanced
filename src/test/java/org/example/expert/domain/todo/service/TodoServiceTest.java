@@ -18,10 +18,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,14 +108,13 @@ class TodoServiceTest {
     }
 
     @Test
-    @Disabled
     void 일정_전체_조회() {
         // given
         int page = 1;
         int size = 10;
         Pageable pageable = PageRequest.of(page - 1, size);
         Todo todo = new Todo("title", "content", "weather", new User("email", "pw", UserRole.USER));
-        Page<Todo> todos = (Page<Todo>) todo;
+        Page<Todo> todos = new PageImpl<>(List.of(todo), pageable, 1);
 
         given(todoRepository.findAllByOrderByModifiedAtDesc(pageable)).willReturn(todos);
 
