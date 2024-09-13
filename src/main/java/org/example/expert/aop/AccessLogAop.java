@@ -19,10 +19,13 @@ public class AccessLogAop {
 
     @Before("accessLog()")
     public void leaveAccessLog() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        log.info("요청한 사용자의 ID : {}", request.getAttribute("userId"));
-        log.info("API 요청 시각 : {}", LocalDateTime.now());
-        log.info("API 요청 URL : {}", request.getRequestURL());
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            log.info("요청한 사용자의 ID : {}", request.getAttribute("userId"));
+            log.info("API 요청 시각 : {}", LocalDateTime.now());
+            log.info("API 요청 URL : {}", request.getRequestURL());
+        } catch (IllegalStateException e) {
+            System.out.println("No request found. Error : " + e);
+        }
     }
 }
